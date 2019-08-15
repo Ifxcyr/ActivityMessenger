@@ -1,8 +1,8 @@
-##  ActivityMessenger，借助Kotlin特性，简化Activity之间的通讯逻辑代码'。
+##  ActivityMessenger，借助Kotlin特性，简化Activity之间的通讯逻辑代码。
 ### 博客详情： 敬请期待。。。
 
 ### 唠叨：
-在日常开发中，每次使用startActivityForResult时，要做的事情都超级繁琐：
+#### 在日常开发中，每次使用startActivityForResult时，要做的事情都超级多：
 
  1. 定义一个`RequestCode`；
  
@@ -13,9 +13,10 @@
  4. 目标*Activity*处理完成后还要把数据一个个`put`进*Intent*中，`setResult`然后`finish`；
  
  5. 如果参数是可序列化的对象(如*ArrayList\<Model\>*)，取出来的时候还要**强制转型**，接着还要把 ***UNCHECKED_CAST*** 警告抑制；
- 
-在饱受这些繁琐折磨之后，便诞生出了**ActivityMessenger**。
-它有以下特点：
+ <br/>
+
+#### 在饱受这些繁琐折磨之后，便诞生出了**ActivityMessenger**。
+#### 它有以下特点：
 
  1. `startActivityForResult`不用另外定义`RequestCode`；
  
@@ -26,10 +27,11 @@
  4. 从*Intent*中取出数据时，无须调用对应类型的方法，如`getStringExtra()`、`getIntExtra()`、`getSerializableExtra()`等；
  
  5. 如果参数是可序列化的对象(如*ArrayList\<Model\>*)，取出来的时候不用强制转型，也没有可怕的 ***UNCHECKED_CAST*** 警告了；
+<br/>
 
 ### 示例：
-#### startActivity：
-方式1（假设`TestActivity`是要启动的Activity）：
+### startActivity：
+***方式1***（假设`TestActivity`是要启动的Activity）：
 ```kotlin
     //不携带参数
     ActivityMessenger.startActivity<TestActivity>(this)
@@ -37,7 +39,7 @@
     //携带参数（可连续多个键值对）
     ActivityMessenger.startActivity<TestActivity>(this, "Key" to "Value")
 ```
-方式2（假设`TestActivity`是要启动的Activity）：
+***方式2***（假设`TestActivity`是要启动的Activity）：
 ```kotlin
     //不携带参数
     ActivityMessenger.startActivity(this, TestActivity::class)
@@ -49,11 +51,10 @@
         "Key2" to 123
     )
 ```
-
 <br/>
 
-#### startActivityForResult：
-方式1（假设`TestActivity`是要启动的Activity）：
+### startActivityForResult：
+***方式1***（假设`TestActivity`是要启动的Activity）：
 ```kotlin
     //不携带参数
     ActivityMessenger.startActivityForResult<TestActivity>(this) {
@@ -63,10 +64,10 @@
             //处理成功，这里可以操作返回的intent
         }
     }
+    
+    //携带参数同startActivity。
 ```
-携带参数同startActivity。
-
-方式2（假设`TestActivity`是要启动的Activity）：
+***方式2***（假设`TestActivity`是要启动的Activity）：
 ```kotlin
     //不携带参数
     ActivityMessenger.startActivityForResult(this, TestActivity::class) {
@@ -77,28 +78,29 @@
         }
     }
     
+    //携带参数同startActivity。    
 ```
-携带参数同startActivity。
-
 <br/>
 
-#### finish：
+### finish：
 ```kotlin
     //退出并设置参数
     ActivityMessenger.finish(this, "Key1" to "Value1", "Key2" to 2)
 ```
-
 <br/>
 
-#### getExtras（获取Intent参数）：
+### getExtras（获取Intent参数）：
+***方式1***
 ```kotlin
+    //预先声明好类型
     var mData: List<String>? = null
     mData = intent.get("Key1")
-    
-    //或者
+```
+***方式2***
+```kotlin
+    //取出时再决定类型
     val result = intent.get<String>("Key2")
 ```
-
 <br/>
 
 ### 使用方式：
