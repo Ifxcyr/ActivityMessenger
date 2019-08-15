@@ -6,11 +6,11 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.BaseBundle
+import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
-import android.util.ArrayMap
 import java.io.Serializable
 import java.lang.reflect.Field
 import java.lang.reflect.Method
@@ -167,7 +167,7 @@ fun <O> Intent.get(key: String): O? {
     try {
         val extras = IntentFieldMethod.mExtras.get(this) as Bundle
         IntentFieldMethod.unparcel.invoke(extras)
-        val map = IntentFieldMethod.mMap.get(extras) as ArrayMap<String, Any>
+        val map = IntentFieldMethod.mMap.get(extras) as Map<String, Any>
         return map[key] as O
     } catch (e: Exception) {
         //Ignore
@@ -270,8 +270,13 @@ internal object IntentFieldMethod {
     init {
         try {
             mExtras = Intent::class.java.getDeclaredField("mExtras")
-            mMap = BaseBundle::class.java.getDeclaredField("mMap")
-            unparcel = BaseBundle::class.java.getDeclaredMethod("unparcel")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                mMap = BaseBundle::class.java.getDeclaredField("mMap")
+                unparcel = BaseBundle::class.java.getDeclaredMethod("unparcel")
+            } else {
+                mMap = Bundle::class.java.getDeclaredField("mMap")
+                unparcel = Bundle::class.java.getDeclaredMethod("unparcel")
+            }
             mExtras.isAccessible = true
             mMap.isAccessible = true
             unparcel.isAccessible = true
