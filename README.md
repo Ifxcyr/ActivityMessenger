@@ -1,4 +1,4 @@
-##  ActivityMessenger，借助Kotlin特性，简化Activity之间的通讯逻辑代码。
+##  ActivityMessenger，借助Kotlin特性，简化Activity之间传参和回调的逻辑代码。
 ### 博客详情： 敬请期待。。。
 
 ### 唠叨：
@@ -110,3 +110,7 @@ implementation 'com.wuyr:activitymessenger:1.0.1'
 ```
 
 ### Demo源码地址： <https://github.com/wuyr/ActivityMessenger>
+
+### 感谢：
+#### Jowan: <https://www.jowanxu.top/>
+#### RxActivityResult: <https://github.com/nekocode/RxActivityResult>
