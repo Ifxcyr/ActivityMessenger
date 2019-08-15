@@ -101,6 +101,13 @@
     //取出时再决定类型
     val result = intent.get<String>("Key2")
 ```
+
+***方式3***
+```kotlin
+    // 使用委托
+    val key3 by extraAct("key3", "test")
+    var key4: String? by extraAct("key4")
+```
 <br/>
 
 ### 使用方式：
