@@ -50,6 +50,26 @@ object ActivityMessenger {
     ) = starter.startActivity(Intent(starter, TARGET::class.java).putExtras(*params))
 
     /**
+     * Fragment跳转，同[Activity.startActivity]
+     *  示例：
+     *  <pre>
+     *      //不携带参数
+     *      ActivityMessenger.startActivity<TestActivity>(this)
+     *
+     *      //携带参数（可连续多个键值对）
+     *      ActivityMessenger.startActivity<TestActivity>(this, "Key" to "Value")
+     *  </pre>
+     *
+     * @param TARGET 要启动的Activity
+     * @param starter 发起的Fragment
+     * @param params extras键值对
+     */
+    inline fun <reified TARGET : Activity> startActivity(
+        starter: Fragment,
+        vararg params: Pair<String, Any>
+    ) = starter.startActivity(Intent(starter.context, TARGET::class.java).putExtras(*params))
+
+    /**
      *  作用同[Activity.startActivity]
      *  示例：
      *  <pre>
@@ -73,6 +93,31 @@ object ActivityMessenger {
         target: KClass<out Activity>,
         vararg params: Pair<String, Any>
     ) = starter.startActivity(Intent(starter, target.java).putExtras(*params))
+
+    /**
+     *  Fragment跳转，同[Activity.startActivity]
+     *  示例：
+     *  <pre>
+     *      //不携带参数
+     *      ActivityMessenger.startActivity(this, TestActivity::class)
+     *
+     *      //携带参数（可连续多个键值对）
+     *     ActivityMessenger.startActivity(
+     *         this, TestActivity::class,
+     *         "Key1" to "Value",
+     *         "Key2" to 123
+     *     )
+     *  </pre>
+     *
+     * @param starter 发起的Fragment
+     * @param target 要启动的Activity
+     * @param params extras键值对
+     */
+    fun startActivity(
+        starter: Fragment,
+        target: KClass<out Activity>,
+        vararg params: Pair<String, Any>
+    ) = starter.startActivity(Intent(starter.context, target.java).putExtras(*params))
 
     /**
      *  作用同[Activity.startActivityForResult]
@@ -101,6 +146,32 @@ object ActivityMessenger {
     ) = startActivityForResult(starter, TARGET::class, *params, callback = callback)
 
     /**
+     *  Fragment跳转，同[Activity.startActivityForResult]
+     *  示例：
+     *  <pre>
+     *      //不携带参数
+     *      ActivityMessenger.startActivityForResult<TestActivity>(this) {
+     *          if (it == null) {
+     *              //未成功处理，即（ResultCode != RESULT_OK）
+     *          } else {
+     *              //处理成功，这里可以操作返回的intent
+     *          }
+     *      }
+     *  </pre>
+     *  携带参数同[startActivity]
+     *
+     * @param TARGET 要启动的Activity
+     * @param starter 发起的Activity
+     * @param params extras键值对
+     * @param callback onActivityResult的回调
+     */
+    inline fun <reified TARGET : Activity> startActivityForResult(
+        starter: Fragment,
+        vararg params: Pair<String, Any>,
+        crossinline callback: ((result: Intent?) -> Unit)
+    ) = startActivityForResult(starter.activity, TARGET::class, *params, callback = callback)
+
+    /**
      *  作用同[Activity.startActivityForResult]
      *  示例：
      *  <pre>
@@ -121,11 +192,12 @@ object ActivityMessenger {
      * @param callback onActivityResult的回调
      */
     inline fun startActivityForResult(
-        starter: FragmentActivity,
+        starter: FragmentActivity?,
         target: KClass<out Activity>,
         vararg params: Pair<String, Any>,
         crossinline callback: ((result: Intent?) -> Unit)
     ) {
+        starter ?: return
         val intent = Intent(starter, target.java).putExtras(*params)
         val fm = starter.supportFragmentManager
         val fragment = GhostFragment()
@@ -149,6 +221,10 @@ object ActivityMessenger {
     fun finish(src: Activity, vararg params: Pair<String, Any>) = with(src) {
         setResult(Activity.RESULT_OK, Intent().putExtras(*params))
         finish()
+    }
+
+    fun finish(src: Fragment, vararg params: Pair<String, Any>) = src.activity?.run {
+        finish(this, *params)
     }
 }
 
