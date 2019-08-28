@@ -1,5 +1,5 @@
 ##  ActivityMessenger，借助Kotlin特性，简化Activity之间传参和回调的逻辑代码。
-### 博客详情： 敬请期待。。。
+### 博客详情： <https://blog.csdn.net/u011387817/article/details/99844066>
 
 ### 唠叨：
 #### 在日常开发中，每次使用startActivityForResult时，要做的事情都超级多：
@@ -12,7 +12,7 @@
  
  4. 目标*Activity*处理完成后还要把数据一个个`put`进*Intent*中，`setResult`然后`finish`；
  
- 5. 如果参数是可序列化的对象(如*ArrayList\<Model\>*)，取出来的时候还要**强制转型**，接着还要把 ***UNCHECKED_CAST*** 警告抑制；
+ 5. 如果参数是可序列化的泛型类对象(如*ArrayList\<Model\>*)，取出来的时候不但要显式强制转型，还要把 UNCHECKED_CAST 警告抑制；
  <br/>
 
 #### 在饱受这些繁琐折磨之后，便诞生出了**ActivityMessenger**。
@@ -26,7 +26,7 @@
  
  4. 从*Intent*中取出数据时，无须调用对应类型的方法，如`getStringExtra()`、`getIntExtra()`、`getSerializableExtra()`等；
  
- 5. 如果参数是可序列化的对象(如*ArrayList\<Model\>*)，取出来的时候不用强制转型，也没有可怕的 ***UNCHECKED_CAST*** 警告了；
+ 5. 如果参数是可序列化的泛型类对象(如*ArrayList\<Model\>*)，取出来的时候不用强制转型，也没有可怕的 ***UNCHECKED_CAST*** 警告了；
 <br/>
 
 ### 示例：
@@ -113,7 +113,7 @@
 ### 使用方式：
 #### 添加依赖：
 ```
-implementation 'com.wuyr:activitymessenger:1.0.2'
+implementation 'com.wuyr:activitymessenger:1.0.3'
 ```
 
 ### Demo源码地址： <https://github.com/wuyr/ActivityMessenger>
