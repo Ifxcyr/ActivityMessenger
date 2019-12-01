@@ -1,4 +1,9 @@
-@file:Suppress("UNCHECKED_CAST", "unused", "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE", "SpellCheckingInspection")
+@file:Suppress(
+    "UNCHECKED_CAST",
+    "unused",
+    "NON_PUBLIC_CALL_FROM_PUBLIC_INLINE",
+    "SpellCheckingInspection"
+)
 
 package com.wuyr.activitymessenger
 
@@ -243,14 +248,22 @@ object ActivityMessenger {
         crossinline callback: ((result: Intent?) -> Unit)
     ) {
         starter ?: return
-        val intent = Intent(starter, target.java).putExtras(*params)
+        startActivityForResult(starter, Intent(starter, target.java).putExtras(*params), callback)
+    }
+
+    inline fun startActivityForResult(
+        starter: FragmentActivity?,
+        intent: Intent, crossinline callback: ((result: Intent?) -> Unit)
+    ) {
+        starter ?: return
         val fm = starter.supportFragmentManager
         val fragment = GhostFragment()
         fragment.init(++sRequestCode, intent) { result ->
             callback(result)
             fm.beginTransaction().remove(fragment).commitAllowingStateLoss()
         }
-        fm.beginTransaction().add(fragment, GhostFragment::class.java.simpleName).commitAllowingStateLoss()
+        fm.beginTransaction().add(fragment, GhostFragment::class.java.simpleName)
+            .commitAllowingStateLoss()
     }
 
     /**
@@ -508,3 +521,38 @@ fun <T> extraAct(extraName: String): ActivityExtras<T?> = ActivityExtras(extraNa
 
 fun <T> extraAct(extraName: String, defaultValue: T): ActivityExtras<T> =
     ActivityExtras(extraName, defaultValue)
+
+
+/**
+ * 以下方法只是把ActivityMessenger里面的方法变成了扩展方法
+ */
+inline fun <reified TARGET : Activity> FragmentActivity.startActivity(
+    vararg params: Pair<String, Any>
+) = startActivity(Intent(this, TARGET::class.java).putExtras(*params))
+
+fun FragmentActivity.startActivity(
+    target: KClass<out Activity>, vararg params: Pair<String, Any>
+) = startActivity(Intent(this, target.java).putExtras(*params))
+
+inline fun <reified TARGET : Activity> FragmentActivity.startActivityForResult(
+    vararg params: Pair<String, Any>, crossinline callback: ((result: Intent?) -> Unit)
+) = startActivityForResult(TARGET::class, *params, callback = callback)
+
+inline fun FragmentActivity.startActivityForResult(
+    target: KClass<out Activity>, vararg params: Pair<String, Any>,
+    crossinline callback: ((result: Intent?) -> Unit)
+) = ActivityMessenger.startActivityForResult(this, target, *params, callback = callback)
+
+fun Activity.finish(vararg params: Pair<String, Any>) = run {
+    setResult(Activity.RESULT_OK, Intent().putExtras(*params))
+    finish()
+}
+
+fun String.toIntent(flags: Int = 0): Intent = Intent(this).setFlags(flags)
+
+inline fun FragmentActivity?.startActivityForResult(
+    intent: Intent, crossinline callback: ((result: Intent?) -> Unit)
+) {
+    this ?: return
+    ActivityMessenger.startActivityForResult(this, intent, callback)
+}
