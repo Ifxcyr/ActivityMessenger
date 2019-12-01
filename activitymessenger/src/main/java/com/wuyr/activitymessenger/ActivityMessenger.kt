@@ -530,21 +530,49 @@ inline fun <reified TARGET : Activity> FragmentActivity.startActivity(
     vararg params: Pair<String, Any>
 ) = startActivity(Intent(this, TARGET::class.java).putExtras(*params))
 
+inline fun <reified TARGET : Activity> Fragment.startActivity(
+    vararg params: Pair<String, Any>
+) = activity?.run {
+    startActivity(Intent(this, TARGET::class.java).putExtras(*params))
+}
+
 fun FragmentActivity.startActivity(
     target: KClass<out Activity>, vararg params: Pair<String, Any>
 ) = startActivity(Intent(this, target.java).putExtras(*params))
 
+fun Fragment.startActivity(
+    target: KClass<out Activity>, vararg params: Pair<String, Any>
+) = activity?.run {
+    startActivity(Intent(this, target.java).putExtras(*params))
+}
+
 inline fun <reified TARGET : Activity> FragmentActivity.startActivityForResult(
     vararg params: Pair<String, Any>, crossinline callback: ((result: Intent?) -> Unit)
 ) = startActivityForResult(TARGET::class, *params, callback = callback)
+
+inline fun <reified TARGET : Activity> Fragment.startActivityForResult(
+    vararg params: Pair<String, Any>, crossinline callback: ((result: Intent?) -> Unit)
+) = activity?.startActivityForResult(TARGET::class, *params, callback = callback)
 
 inline fun FragmentActivity.startActivityForResult(
     target: KClass<out Activity>, vararg params: Pair<String, Any>,
     crossinline callback: ((result: Intent?) -> Unit)
 ) = ActivityMessenger.startActivityForResult(this, target, *params, callback = callback)
 
+inline fun Fragment.startActivityForResult(
+    target: KClass<out Activity>, vararg params: Pair<String, Any>,
+    crossinline callback: ((result: Intent?) -> Unit)
+) = activity?.run {
+    ActivityMessenger.startActivityForResult(this, target, *params, callback = callback)
+}
+
 fun Activity.finish(vararg params: Pair<String, Any>) = run {
     setResult(Activity.RESULT_OK, Intent().putExtras(*params))
+    finish()
+}
+
+fun Activity.finish(intent: Intent) = run {
+    setResult(Activity.RESULT_OK, intent)
     finish()
 }
 
@@ -552,7 +580,12 @@ fun String.toIntent(flags: Int = 0): Intent = Intent(this).setFlags(flags)
 
 inline fun FragmentActivity?.startActivityForResult(
     intent: Intent, crossinline callback: ((result: Intent?) -> Unit)
-) {
-    this ?: return
+) = this?.run {
+    ActivityMessenger.startActivityForResult(this, intent, callback)
+}
+
+inline fun Fragment.startActivityForResult(
+    intent: Intent, crossinline callback: ((result: Intent?) -> Unit)
+) = activity?.run {
     ActivityMessenger.startActivityForResult(this, intent, callback)
 }
