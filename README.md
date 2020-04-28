@@ -34,19 +34,19 @@
 ***方式1***（假设`TestActivity`是要启动的Activity）：
 ```kotlin
     //不携带参数
-    ActivityMessenger.startActivity<TestActivity>(this)
+    startActivity<TestActivity>()
     
     //携带参数（可连续多个键值对）
-    ActivityMessenger.startActivity<TestActivity>(this, "Key" to "Value")
+    startActivity<TestActivity>("Key" to "Value")
 ```
 ***方式2***（假设`TestActivity`是要启动的Activity）：
 ```kotlin
     //不携带参数
-    ActivityMessenger.startActivity(this, TestActivity::class)
+    startActivity(TestActivity::class)
     
     //携带参数（可连续多个键值对）
-    ActivityMessenger.startActivity(
-        this, TestActivity::class,
+    startActivity(
+        TestActivity::class,
         "Key1" to "Value",
         "Key2" to 123
     )
@@ -57,7 +57,7 @@
 ***方式1***（假设`TestActivity`是要启动的Activity）：
 ```kotlin
     //不携带参数
-    ActivityMessenger.startActivityForResult<TestActivity>(this) {
+    startActivityForResult<TestActivity> {
         if (it == null) {
             //未成功处理，即（ResultCode != RESULT_OK）
         } else {
@@ -70,7 +70,7 @@
 ***方式2***（假设`TestActivity`是要启动的Activity）：
 ```kotlin
     //不携带参数
-    ActivityMessenger.startActivityForResult(this, TestActivity::class) {
+    startActivityForResult(TestActivity::class) {
         if (it == null) {
             //未成功处理，即（ResultCode != RESULT_OK）
         } else {
@@ -85,7 +85,7 @@
 ### finish：
 ```kotlin
     //退出并设置参数
-    ActivityMessenger.finish(this, "Key1" to "Value1", "Key2" to 2)
+    finish("Key1" to "Value1", "Key2" to 2)
 ```
 <br/>
 
@@ -110,10 +110,17 @@
 ```
 <br/>
 
+### toIntent：
+```kotlin
+    val action = "android.media.action.IMAGE_CAPTURE"
+    val intent = action.toIntent()
+```
+<br/>
+
 ### 使用方式：
 #### 添加依赖：
 ```
-implementation 'com.wuyr:activitymessenger:1.1.1'
+implementation 'com.wuyr:activitymessenger:1.2.0'
 ```
 
 ### Demo源码地址： <https://github.com/wuyr/ActivityMessenger>

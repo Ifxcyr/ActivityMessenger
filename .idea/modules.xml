@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/ActivityMessenger.iml" filepath="$PROJECT_DIR$/.idea/ActivityMessenger.iml" />
+      <module fileurl="file://$PROJECT_DIR$/activitymessenger/ActivityMessenger-activitymessenger.iml" filepath="$PROJECT_DIR$/activitymessenger/ActivityMessenger-activitymessenger.iml" group="ActivityMessenger/activitymessenger" />
       <module fileurl="file://$PROJECT_DIR$/activitymessenger/activitymessenger.iml" filepath="$PROJECT_DIR$/activitymessenger/activitymessenger.iml" />
+      <module fileurl="file://$PROJECT_DIR$/projects-ActivityMessenger.iml" filepath="$PROJECT_DIR$/projects-ActivityMessenger.iml" group="ActivityMessenger" />
     </modules>
   </component>
 </project>
