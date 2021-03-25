@@ -225,6 +225,56 @@ object ActivityMessenger {
      *  示例：
      *  <pre>
      *      //不携带参数
+     *      ActivityMessenger.startActivityForResult<TestActivity> {resultCode, result->
+     *          if (resultCode == RESULT_OK) {
+     *              //处理成功，这里可以操作返回的intent
+     *          } else {
+     *             //未成功处理
+     *          }
+     *      }
+     *  </pre>
+     *  携带参数同[startActivity]
+     *
+     * @param TARGET 要启动的Activity
+     * @param starter 发起的Activity
+     * @param params extras键值对
+     * @param callback onActivityResult的回调
+     */
+    inline fun <reified TARGET : Activity> startActivityForResult2(
+        starter: Activity, vararg params: Pair<String, Any?>,
+        crossinline callback: ((resultCode: Int, result: Intent?) -> Unit)
+    ) = startActivityForResult2(starter, TARGET::class, *params, callback = callback)
+
+    /**
+     *  Fragment跳转，同[Activity.startActivityForResult]
+     *  示例：
+     *  <pre>
+     *      //不携带参数
+     *      ActivityMessenger.startActivityForResult<TestActivity> {resultCode, result->
+     *          if (resultCode == RESULT_OK) {
+     *              //处理成功，这里可以操作返回的intent
+     *          } else {
+     *             //未成功处理
+     *          }
+     *      }
+     *  </pre>
+     *  携带参数同[startActivity]
+     *
+     * @param TARGET 要启动的Activity
+     * @param starter 发起的Activity
+     * @param params extras键值对
+     * @param callback onActivityResult的回调
+     */
+    inline fun <reified TARGET : Activity> startActivityForResult2(
+        starter: Fragment, vararg params: Pair<String, Any?>,
+        crossinline callback: ((resultCode: Int, result: Intent?) -> Unit)
+    ) = startActivityForResult2(starter.activity, TARGET::class, *params, callback = callback)
+
+    /**
+     *  作用同[Activity.startActivityForResult]
+     *  示例：
+     *  <pre>
+     *      //不携带参数
      *      ActivityMessenger.startActivityForResult(this, TestActivity::class) {
      *          if (it == null) {
      *              //未成功处理，即（ResultCode != RESULT_OK）
@@ -257,12 +307,63 @@ object ActivityMessenger {
         startActivityForResult(it, Intent(it, target).putExtras(*params), callback)
     }
 
+    /**
+     *  作用同[Activity.startActivityForResult]
+     *  示例：
+     *  <pre>
+     *      //不携带参数
+     *      ActivityMessenger.startActivityForResult(this, TestActivity::class) {resultCode, result->
+     *          if (resultCode == RESULT_OK) {
+     *              //处理成功，这里可以操作返回的intent
+     *          } else {
+     *             //未成功处理
+     *          }
+     *      }
+     *  </pre>
+     *  携带参数同[startActivity]
+     *
+     * @param starter 发起的Activity
+     * @param target 要启动的Activity
+     * @param params extras键值对
+     * @param callback onActivityResult的回调
+     */
+    inline fun startActivityForResult2(
+        starter: Activity?, target: KClass<out Activity>,
+        vararg params: Pair<String, Any?>, crossinline callback: ((resultCode: Int, result: Intent?) -> Unit)
+    ) = starter.runIfNonNull {
+        startActivityForResult2(it, Intent(it, target.java).putExtras(*params), callback)
+    }
+
+    /**
+     * 作用同上，此方法为了兼容Java Class
+     */
+    inline fun startActivityForResult2(
+        starter: Activity?, target: Class<out Activity>,
+        vararg params: Pair<String, Any?>, crossinline callback: ((resultCode: Int, result: Intent?) -> Unit)
+    ) = starter.runIfNonNull {
+        startActivityForResult2(it, Intent(it, target).putExtras(*params), callback)
+    }
+
     inline fun startActivityForResult(
         starter: Activity?, intent: Intent, crossinline callback: ((result: Intent?) -> Unit)
     ) = starter.runIfNonNull {
         val fragment = GhostFragment()
         fragment.init(++sRequestCode, intent) { result ->
             callback(result)
+            it.fragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss()
+        }
+        it.fragmentManager.beginTransaction().add(fragment, GhostFragment::class.java.simpleName)
+            .commitAllowingStateLoss()
+    }
+
+    inline fun startActivityForResult2(
+        starter: Activity?,
+        intent: Intent,
+        crossinline callback: ((resultCode: Int, result: Intent?) -> Unit)
+    ) = starter.runIfNonNull {
+        val fragment = GhostFragment()
+        fragment.init(++sRequestCode, intent) { resultCode, result ->
+            callback(resultCode, result)
             it.fragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss()
         }
         it.fragmentManager.beginTransaction().add(fragment, GhostFragment::class.java.simpleName)
@@ -303,11 +404,26 @@ class GhostFragment : Fragment() {
     private var requestCode = -1
     private var intent: Intent? = null
     private var callback: ((result: Intent?) -> Unit)? = null
+    private var callback2: ((resultCode: Int, result: Intent?) -> Unit)? = null
 
     fun init(requestCode: Int, intent: Intent, callback: ((result: Intent?) -> Unit)) {
         this.requestCode = requestCode
         this.intent = intent
         this.callback = callback
+    }
+
+    fun init(
+        requestCode: Int, intent: Intent,
+        callback: ((resultCode: Int, result: Intent?) -> Unit)
+    ) {
+        this.requestCode = requestCode
+        this.intent = intent
+        this.callback2 = callback
+    }
+
+    override fun onAttach(activity: Activity?) {
+        super.onAttach(activity)
+        intent?.let { startActivityForResult(it, requestCode) }
     }
 
     override fun onAttach(context: Context) {
@@ -318,8 +434,8 @@ class GhostFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == this.requestCode) {
-            val result = if (resultCode == Activity.RESULT_OK && data != null) data else null
-            callback?.let { it(result) }
+            callback?.let { it(data) }
+            callback2?.let { it(resultCode, data) }
         }
     }
 
@@ -327,5 +443,6 @@ class GhostFragment : Fragment() {
         super.onDetach()
         intent = null
         callback = null
+        callback2 = null
     }
 }

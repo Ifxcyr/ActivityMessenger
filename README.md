@@ -116,11 +116,11 @@
     val intent = action.toIntent()
 ```
 <br/>
-
+                                                                                                                                                                                                                  
 ### 使用方式：
 #### 添加依赖：
 ```
-implementation 'com.wuyr:activitymessenger:1.2.0'
+implementation 'com.wuyr:activitymessenger:1.2.1'
 ```
 
 ### Demo源码地址： <https://github.com/wuyr/ActivityMessenger>

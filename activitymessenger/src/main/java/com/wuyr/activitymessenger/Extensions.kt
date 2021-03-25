@@ -218,6 +218,37 @@ inline fun <reified TARGET : Activity> androidx.fragment.app.Fragment.startActiv
  *  示例：
  *  <pre>
  *      //不携带参数
+ *      startActivityForResult<TestActivity> {resultCode, result->
+ *          if (resultCode == RESULT_OK) {
+ *              //处理成功，这里可以操作返回的intent
+ *          } else {
+ *             //未成功处理
+ *          }
+ *      }
+ *  </pre>
+ *  携带参数同[startActivity]
+ *
+ * @param TARGET 要启动的Activity
+ * @param params extras键值对
+ * @param callback onActivityResult的回调
+ */
+inline fun <reified TARGET : Activity> Activity.startActivityForResult2(
+    vararg params: Pair<String, Any?>, crossinline callback: ((resultCode: Int, result: Intent?) -> Unit)
+) = startActivityForResult2(TARGET::class, *params, callback = callback)
+
+inline fun <reified TARGET : Activity> Fragment.startActivityForResult2(
+    vararg params: Pair<String, Any?>, crossinline callback: ((resultCode: Int, result: Intent?) -> Unit)
+) = activity?.startActivityForResult2(TARGET::class, *params, callback = callback)
+
+inline fun <reified TARGET : Activity> androidx.fragment.app.Fragment.startActivityForResult2(
+    vararg params: Pair<String, Any?>, crossinline callback: ((resultCode: Int, result: Intent?) -> Unit)
+) = activity?.startActivityForResult2(TARGET::class, *params, callback = callback)
+
+/**
+ *  作用同[Activity.startActivityForResult]
+ *  示例：
+ *  <pre>
+ *      //不携带参数
  *      startActivityForResult(this, TestActivity::class) {
  *          if (it == null) {
  *              //未成功处理，即（ResultCode != RESULT_OK）
@@ -275,6 +306,66 @@ inline fun androidx.fragment.app.Fragment.startActivityForResult(
 
 /**
  *  作用同[Activity.startActivityForResult]
+ *  示例：
+ *  <pre>
+ *      //不携带参数
+ *      startActivityForResult(this, TestActivity::class) {resultCode, result->
+ *          if (resultCode == RESULT_OK) {
+ *              //处理成功，这里可以操作返回的intent
+ *          } else {
+ *             //未成功处理
+ *          }
+ *      }
+ *  </pre>
+ *  携带参数同[startActivity]
+ *
+ * @param target 要启动的Activity
+ * @param params extras键值对
+ * @param callback onActivityResult的回调
+ */
+inline fun Activity.startActivityForResult2(
+    target: KClass<out Activity>, vararg params: Pair<String, Any?>,
+    crossinline callback: ((resultCode: Int, result: Intent?) -> Unit)
+) = ActivityMessenger.startActivityForResult2(this, target, *params, callback = callback)
+
+inline fun Fragment.startActivityForResult2(
+    target: KClass<out Activity>, vararg params: Pair<String, Any?>,
+    crossinline callback: ((resultCode: Int, result: Intent?) -> Unit)
+) = activity?.run {
+    ActivityMessenger.startActivityForResult2(this, target, *params, callback = callback)
+}
+
+inline fun androidx.fragment.app.Fragment.startActivityForResult2(
+    target: KClass<out Activity>, vararg params: Pair<String, Any?>,
+    crossinline callback: ((resultCode: Int, result: Intent?) -> Unit)
+) = activity?.run {
+    ActivityMessenger.startActivityForResult2(this, target, *params, callback = callback)
+}
+
+/**
+ * 作用同上，以下三个方法为了兼容Java Class
+ */
+inline fun Activity.startActivityForResult2(
+    target: Class<out Activity>, vararg params: Pair<String, Any?>,
+    crossinline callback: ((resultCode: Int, result: Intent?) -> Unit)
+) = ActivityMessenger.startActivityForResult2(this, target, *params, callback = callback)
+
+inline fun Fragment.startActivityForResult2(
+    target: Class<out Activity>, vararg params: Pair<String, Any?>,
+    crossinline callback: ((resultCode: Int, result: Intent?) -> Unit)
+) = activity?.run {
+    ActivityMessenger.startActivityForResult2(this, target, *params, callback = callback)
+}
+
+inline fun androidx.fragment.app.Fragment.startActivityForResult2(
+    target: Class<out Activity>, vararg params: Pair<String, Any?>,
+    crossinline callback: ((resultCode: Int, result: Intent?) -> Unit)
+) = activity?.run {
+    ActivityMessenger.startActivityForResult2(this, target, *params, callback = callback)
+}
+
+/**
+ *  作用同[Activity.startActivityForResult]
  *
  * @param intent intent
  * @param callback onActivityResult的回调
@@ -295,6 +386,24 @@ inline fun androidx.fragment.app.Fragment.startActivityForResult(
     intent: Intent, crossinline callback: ((result: Intent?) -> Unit)
 ) = activity?.run {
     ActivityMessenger.startActivityForResult(this, intent, callback)
+}
+
+inline fun Activity?.startActivityForResult2(
+    intent: Intent, crossinline callback: ((resultCode: Int, result: Intent?) -> Unit)
+) = this?.run {
+    ActivityMessenger.startActivityForResult2(this, intent, callback)
+}
+
+inline fun Fragment.startActivityForResult2(
+    intent: Intent, crossinline callback: ((resultCode: Int, result: Intent?) -> Unit)
+) = activity?.run {
+    ActivityMessenger.startActivityForResult2(this, intent, callback)
+}
+
+inline fun androidx.fragment.app.Fragment.startActivityForResult2(
+    intent: Intent, crossinline callback: ((resultCode: Int, result: Intent?) -> Unit)
+) = activity?.run {
+    ActivityMessenger.startActivityForResult2(this, intent, callback)
 }
 
 /**
