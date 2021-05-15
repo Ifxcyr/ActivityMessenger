@@ -421,14 +421,22 @@ class GhostFragment : Fragment() {
         this.callback2 = callback
     }
 
+    private var activityStarted = false
+
     override fun onAttach(activity: Activity?) {
         super.onAttach(activity)
-        intent?.let { startActivityForResult(it, requestCode) }
+        if (!activityStarted) {
+            activityStarted = true
+            intent?.let { startActivityForResult(it, requestCode) }
+        }
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        intent?.let { startActivityForResult(it, requestCode) }
+        if (!activityStarted) {
+            activityStarted = true
+            intent?.let { startActivityForResult(it, requestCode) }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

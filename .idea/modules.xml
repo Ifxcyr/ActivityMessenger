@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ActivityMessenger2.iml" filepath="$PROJECT_DIR$/.idea/modules/ActivityMessenger2.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/activitymessenger/ActivityMessenger2.activitymessenger.iml" filepath="$PROJECT_DIR$/.idea/modules/activitymessenger/ActivityMessenger2.activitymessenger.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ActivityMessenger.iml" filepath="$PROJECT_DIR$/.idea/modules/ActivityMessenger.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/activitymessenger/ActivityMessenger.activitymessenger.iml" filepath="$PROJECT_DIR$/.idea/modules/activitymessenger/ActivityMessenger.activitymessenger.iml" />
     </modules>
   </component>
 </project>

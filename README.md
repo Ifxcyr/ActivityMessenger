@@ -120,7 +120,7 @@
 ### 使用方式：
 #### 添加依赖：
 ```
-implementation 'com.wuyr:activitymessenger:1.2.1'
+implementation 'com.wuyr:activitymessenger:1.2.2'
 ```
 
 ### Demo源码地址： <https://github.com/wuyr/ActivityMessenger>
