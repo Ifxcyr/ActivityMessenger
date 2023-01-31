@@ -412,10 +412,7 @@ class GhostFragment : Fragment() {
         this.callback = callback
     }
 
-    fun init(
-        requestCode: Int, intent: Intent,
-        callback: ((resultCode: Int, result: Intent?) -> Unit)
-    ) {
+    fun init(requestCode: Int, intent: Intent, callback: ((resultCode: Int, result: Intent?) -> Unit)) {
         this.requestCode = requestCode
         this.intent = intent
         this.callback2 = callback
@@ -442,8 +439,8 @@ class GhostFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == this.requestCode) {
-            callback?.let { it(data) }
-            callback2?.let { it(resultCode, data) }
+            callback?.invoke(data)
+            callback2?.invoke(resultCode, data)
         }
     }
 

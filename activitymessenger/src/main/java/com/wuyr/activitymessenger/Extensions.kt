@@ -14,6 +14,7 @@ import com.wuyr.activitymessenger.IntentFieldMethod.internalMap
 import java.io.Serializable
 import java.lang.reflect.Field
 import java.lang.reflect.Method
+import java.util.function.BiFunction
 import kotlin.reflect.KClass
 
 /**
@@ -35,14 +36,28 @@ import kotlin.reflect.KClass
  * @param key 对应的Key
  * @return 对应的Value
  */
-fun <O> Intent?.get(key: String, defaultValue: O? = null) =
-    this?.internalMap()?.get(key) as? O ?: defaultValue
+fun <O> Intent?.get(key: String, defaultValue: O? = null) = this?.internalMap()?.get(key)?.let {
+    if (Build.VERSION.SDK_INT >= 33 && it is BiFunction<*, *, *>) {
+        runCatching {
+            (it as BiFunction<Class<*>?, Array<Class<*>?>?, *>).apply(null, null).also { value ->
+                internalMap()?.put(key, value)
+            } as? O
+        }.getOrElse { defaultValue }
+    } else it as? O
+} ?: defaultValue
 
 /**
  * 作用同Intent.[get]
  */
-fun <O> Bundle?.get(key: String, defaultValue: O? = null) =
-    this?.internalMap()?.get(key) as? O ?: defaultValue
+fun <O> Bundle?.get(key: String, defaultValue: O? = null) = this?.internalMap()?.get(key)?.let {
+    if (Build.VERSION.SDK_INT >= 33 && it is BiFunction<*, *, *>) {
+        runCatching {
+            (it as BiFunction<Class<*>?, Array<Class<*>?>?, *>).apply(null, null).also { value ->
+                internalMap()?.put(key, value)
+            } as? O
+        }.getOrElse { defaultValue }
+    } else it as? O
+} ?: defaultValue
 
 /**
  *  [Intent]的扩展方法，用来批量put键值对
@@ -482,11 +497,11 @@ internal object IntentFieldMethod {
     internal fun Intent.internalMap() = runSafely {
         mMap?.get((mExtras?.get(this) as? Bundle).also {
             it?.run { unparcel?.invoke(this) }
-        }) as? Map<String, Any?>
+        }) as? java.util.Map<String, Any?>
     }
 
     internal fun Bundle.internalMap() = runSafely {
         unparcel?.invoke(it)
-        mMap?.get(it) as? Map<String, Any?>
+        mMap?.get(it) as? java.util.Map<String, Any?>
     }
 }
